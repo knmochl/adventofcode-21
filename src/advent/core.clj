@@ -1,4 +1,4 @@
-(ns adventofcode-21.core
+(ns advent.core
   (:gen-class))
 
 (defn -main
