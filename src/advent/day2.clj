@@ -23,8 +23,21 @@
     :up [position (- depth amount)]
     :down [position (+ depth amount)]))
 
+(defn execute-command-aim
+  [[position depth aim] [direction amount]]
+  (case direction
+    :forward [(+ position amount) (+ depth (* aim amount)) aim]
+    :up [position depth (- aim amount)]
+    :down [position depth (+ aim amount)]))
+
 (defn part1
   []
   (let [command-lines (slurp-lines "input2.txt")
         commands (map parse-command command-lines)]
     (apply * (reduce execute-command [0 0] commands))))
+
+(defn part2
+  []
+  (let [commands (map parse-command (slurp-lines "input2.txt"))
+        state (reduce execute-command-aim [0 0 0] commands)]
+    (* (first state) (second state))))
