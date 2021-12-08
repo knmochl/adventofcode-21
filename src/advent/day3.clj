@@ -28,7 +28,7 @@
 (defn most-common-digit
   [digits]
   (let [freqs (frequencies digits)]
-    (if (< (freqs \0) (freqs \1))
+    (if (<= (freqs \0) (freqs \1))
       \1
       \0)))
 
@@ -48,9 +48,29 @@
   (reduce #(+ (* 2 %1) %2)
           (map (comp edn/read-string str) digits)))
 
+(defn create-filter
+  [pos value]
+  (fn [item] (= (get-entry item pos) value)))
+
+(defn filter-sequences
+  [items rule pos]
+  (let [value (rule (get-sequence items pos))
+        new-items (filter (create-filter pos value) items)]
+    (if (= (count new-items) 1)
+      (first new-items)
+      (recur new-items rule (inc pos)))))
+
+
 (defn part1
   []
   (let [values (slurp-lines "input3.txt")
         gamma (convert-binary (map (partial calculate-digit values most-common-digit) (range (count (first values)))))
         epsilon (convert-binary (map (partial calculate-digit values least-common-digit) (range (count (first values)))))]
     (* gamma epsilon)))
+
+(defn part2
+  []
+  (let [values (slurp-lines "input3.txt")
+        oxygen (convert-binary (filter-sequences values most-common-digit 0))
+        carbon (convert-binary (filter-sequences values least-common-digit 0))]
+    (* oxygen carbon)))
